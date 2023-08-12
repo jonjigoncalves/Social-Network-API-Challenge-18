@@ -1,25 +1,18 @@
 const router = require("express").Router();
 const { User } = require("../models");
 
-// Route for creating a new user
-router.post('/users', async (req, res) => {
-    try {
-        const newUser = await User.create(req.body);
-        res.status(201).json(newUser);
-    } catch (err) {
-        res.status(400).json({ error: "Failed to create user" });
-    }
-});
-
 // Route for getting a list of all users
 router.get('/users', async (req, res) => {
     try {
+        // find all user using find(), remeber that findAll() doesnt play nice in mongoose
         const users = await User.find();
         res.json(users);
     } catch (err) {
-        res.status(500).json({ error: "Failed to fetch users" });
+      // handle errors so the app doesnt break
+        res.status(500).json({ error: "Failed to get users" });
     }
 });
+
 
 // Route for getting a user's information by their ID
 router.get('/users/:id', async (req, res) => {
@@ -30,9 +23,22 @@ router.get('/users/:id', async (req, res) => {
         }
         res.json(user);
     } catch (err) {
+      // handle errors so the app doesnt break
         res.status(404).json({ error: 'User not found' });
     }
 });
+
+// Route for creating a new user
+router.post('/users', async (req, res) => {
+    try {
+        const newUser = await User.create(req.body);
+        res.status(201).json(newUser);
+    } catch (err) {
+      // handle errors so the app doesnt break
+        res.status(400).json({ error: "Failed to create user" });
+    }
+});
+
 
 // Route for updating a user's information by their ID
 router.put('/users/:id', async (req, res) => {
@@ -40,6 +46,7 @@ router.put('/users/:id', async (req, res) => {
         const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
         res.json(updatedUser);
     } catch (err) {
+      // handle errors so the app doesnt break
         res.status(400).json({ error: "Failed to update user" });
     }
 });
@@ -53,6 +60,7 @@ router.delete('/users/:id', async (req, res) => {
         }
         res.json({ message: 'User deleted successfully' });
     } catch (err) {
+      // handle errors so the app doesnt break
         res.status(400).json({ error: "Failed to delete user" });
     }
 });
@@ -67,11 +75,11 @@ router.post('/users/:userId/friends/:friendId', async (req, res) => {
         const friend = await User.findById(friendId);
 
         if (!user || !friend) {
-            return res.status(404).json({ error: "User or friend not found" });
+            return res.status(404).json({ error: "User || friend not found" });
         }
 
         if (user.friends.includes(friendId)) {
-            return res.status(400).json({ error: "Friend is already in the user's friend list" });
+            return res.status(400).json({ error: "Friend already in list" });
         }
 
         user.friends.push(friendId);
@@ -79,6 +87,7 @@ router.post('/users/:userId/friends/:friendId', async (req, res) => {
 
         res.json(user);
     } catch (err) {
+      // handle errors so the app doesnt break
         res.status(400).json({ error: "Failed to add friend" });
     }
 });
@@ -96,7 +105,7 @@ router.delete('/users/:userId/friends/:friendId', async (req, res) => {
         }
 
         if (!user.friends.includes(friendId)) {
-            return res.status(400).json({ error: "Friend is not in the user's friend list" });
+            return res.status(400).json({ error: "Friend not in list" });
         }
 
         user.friends = user.friends.filter(friend => friend.toString() !== friendId);
@@ -104,7 +113,8 @@ router.delete('/users/:userId/friends/:friendId', async (req, res) => {
 
         res.json(user);
     } catch (err) {
-        res.status(400).json({ error: "Failed to remove friend" });
+      // handle errors so the app doesnt break
+        res.status(400).json({ error: "Failed to delete friend" });
     }
 });
 

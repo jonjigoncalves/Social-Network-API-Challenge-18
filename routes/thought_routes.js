@@ -64,7 +64,8 @@ router.get('/thoughts', async (req, res) => {
   
       // Remove the thought id from the users thoughts
       const user = await User.findById(deletedThought.userId);
-      user.thoughts = user.thoughts.filter(thoughtId => thoughtId.toString() !== deletedThought._id.toString());
+      user.thoughts = user.thoughts.filter(thoughtId => thoughtId.toString() !== req.params.thoughtId);
+
       await user.save();
   
       res.json({ message: 'thought Deleted' });
@@ -98,15 +99,15 @@ router.get('/thoughts', async (req, res) => {
     try {
       const thoughtId = req.params.thoughtId;
       const reactionId = req.params.reactionId;
-        // Find the thought using the thought ID
+       
       const thought = await Thought.findById(thoughtId);
       if (!thought) {
         return res.status(404).json({ error: 'Thought not in Database' });
       }
   
-      thought.reactions = thought.reactions.filter(reaction => reaction.reactionId.toString() !== reactionId);
-      await thought.save();
-    //Respond with the updated thought
+      thought.reactions = thought.reactions.filter(reaction => reaction._id.toString() !== reactionId);
+        await thought.save();
+   
       res.json(thought);
     } catch (err) {
       res.status(400).json({ error: err.message });
