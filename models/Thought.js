@@ -1,28 +1,6 @@
 const mongoose = require('mongoose');
-
-// Reaction subdocument schema
-const reactionSchema = new mongoose.Schema({
-  reactionId: {
-    type: mongoose.Schema.Types.ObjectId,
-    default: () => new mongoose.Types.ObjectId()
-  },
-  reactionBody: {
-    type: String,
-    required: true,
-    maxlength: 280
-  },
-  username: {
-    type: String,
-    required: true
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  }
-}, {
-  // Apply the getter method to format the createdAt timestamp on query
-  toJSON: { getters: true }
-});
+// import reation model, 
+const Reaction = require('./Reaction'); 
 
 const thoughtSchema = new mongoose.Schema({
   thoughtText: {
@@ -34,17 +12,17 @@ const thoughtSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now,
-    // Apply the getter method to format the timestamp on query
-    get: (createdAt) => createdAt.toLocaleString()
+    get: createdAt => createdAt.toLocaleString()
   },
   username: {
     type: String,
     required: true
   },
-  reactions: [reactionSchema]
+  // Use the Reaction schema 
+  reactions: [Reaction.schema] 
 });
 
-// Virtual to get the reactionCount
+//use the virtual method for the reationCount
 thoughtSchema.virtual('reactionCount').get(function () {
   return this.reactions.length;
 });

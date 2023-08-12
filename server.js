@@ -1,8 +1,5 @@
 const express =  require('express');
-
 const routes = require('./routes');
-
-
 
 // load db connection
 const db = require('./config/connection');
@@ -15,7 +12,7 @@ const PORT = process.env.PORT || 3333;
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// use routes that were called in at the top of the page
+// use the const of routes we set at the top of the page
 app.use(routes); 
 
 // start server after db connection
